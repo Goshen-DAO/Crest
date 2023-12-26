@@ -20,14 +20,17 @@ export default function Footer() {
             />
           </Link>
           Crafted by:
-          <Link href={"/"}>
+          <Link href={"https://goshendao.com"}>
             <Image
               src="/Goshen Horizontal With Color.png" // Replace with the actual logo image path
-              alt="Goshen Verse"
+              alt="Goshen"
               boxSize="auto"
               maxW="120px" // Adjust the maximum width of the logo
             />
           </Link>
+          <Flex>
+          <p>&copy; 2022-2023 Goshen DAO. All rights reserved.</p>
+          </Flex>
           <Flex mt={{ base: 4, md: 0 }} flexDirection="row">
             <Link href="/about" mr={4}>
               About Us
