@@ -1,5 +1,3 @@
-// pages/about.tsx
-
 import React from "react";
 import { NextPage } from "next";
 import {
@@ -9,6 +7,7 @@ import {
   VStack,
   Button,
   Center,
+  Link,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 
@@ -34,10 +33,28 @@ const About: NextPage = () => {
           ecosystem that empowers creators, disrupts the status quo, and unlocks
           new possibilities in the blockchain space.
         </Text>
+
+        {/* GitHub link */}
+        <Text>
+          Explore our code on{" "}
+          <Link href="https://github.com/Goshen-DAO/Crest" target="_blank">
+            GitHub
+          </Link>
+          .
+        </Text>
+
+        {/* Additional technical resources (placeholder) */}
+        <Text>
+          For more technical details and resources, visit our documentation at{" "}
+          <Link href="https://docs.goshendao.com" target="_blank">
+            Docs
+          </Link>
+          .
+        </Text>
       </VStack>
-      <br></br>
-      <br></br>
-      <br></br>
+      <br />
+      <br />
+      <br />
       <Center>
         <Button
           as={NextLink}

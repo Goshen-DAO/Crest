@@ -96,6 +96,9 @@ const Navbar: React.FC<NavbarProps> = () => {
               <Link href={"/claim"}>
                 <Text mr={8}>Claim</Text>
               </Link>
+              <Link href={"https://mint.goshendao.com"}>
+                <Text mr={8}>Mint</Text>
+              </Link>
               <Link href={"/deposit"}>
                 <Text mr={8}>Deposit</Text>
               </Link>
@@ -149,6 +152,11 @@ const Navbar: React.FC<NavbarProps> = () => {
                     <Link href={"/claim"}>
                       <Text color="white" onClick={closeMenu}>
                         Claim
+                      </Text>
+                    </Link>
+                    <Link href={"https://mint.goshendao.com"}>
+                      <Text color="white" onClick={closeMenu}>
+                        Mint
                       </Text>
                     </Link>
                     <Link href={"/deposit"}>
