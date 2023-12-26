@@ -49,7 +49,7 @@ npm run dev
 - **AWS SES:** A cloud-based email service provider that can integrate into any application for high volume email automation. [More info](https://aws.amazon.com/ses/)
 
 ## Contributing
-We welcome contributions from the community! If you'd like to contribute to Crest, please follow our contribution [guidelines](/CONTRIBUTION.md).
+We welcome contributions from the community! If you'd like to contribute to Crest, please follow our contribution [guidelines](/CONTRIBUTING.md).
 
 ## Support and Community
 - Issues: If you encounter any issues or bugs, please report them [here](https://github.com/Goshen-DAO/crest/issues).
