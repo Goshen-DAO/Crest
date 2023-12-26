@@ -1,0 +1,75 @@
+/* CashInOutForm.module.css */
+
+.formContainer {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .inputGroup {
+    margin-bottom: 20px;
+  }
+  
+  .label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .tokenBalance {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 5px;
+    border: 1px solid #006d3a;
+    border-radius: 5px;
+    padding: 15px;
+    width: 100%;
+  }
+  
+  .input {
+    padding: 10px;
+    border: 1px solid #006d3a;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  .select {
+    padding: 10px;
+    border: 1px solid #006d3a;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  .submitButton {
+    background: linear-gradient(to right, teal.500, blue.500);
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+  .submitButton:hover {
+    background-color: linear-gradient(to right, teal.600, blue.600);
+  }
+  
+  .tokenButton:hover {
+    cursor: pointer;
+  }
