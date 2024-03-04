@@ -1,5 +1,5 @@
 // WithdrawNow.tsx
-import { useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 import {
   Box,
   Flex,
@@ -35,15 +35,16 @@ import html2canvas from "html2canvas";
 import { IconButton } from "@chakra-ui/react";
 import { FaSave } from "react-icons/fa";
 
-const AWS = require("aws-sdk");
+const nodemailer = require("nodemailer");
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION, // change the region depending on your AWS SES config
+const transporter = nodemailer.createTransport({
+  service: process.env.SERVICE_PROVIDER, // replace with your email provider (e.g., 'gmail')
+  port:process.env.PORT,
+  auth: {
+    user: process.env.USER_EMAIL, // replace with your email
+    pass: process.env.USER_PASS, // replace with your email password
+  },
 });
-
-const ses = new AWS.SES({ apiVersion: "2010-12-01" });
 
 export default function WithdrawNowPage() {
   const toast = useToast();
@@ -166,7 +167,7 @@ export default function WithdrawNowPage() {
 
       switch (formData.withdrawalDestination) {
         case "GCash":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -180,7 +181,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "Cebuana":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -195,7 +196,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "WesternUnion":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
             <b>Email:</b> ${formData.yourEmail}
             <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -212,7 +213,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "Paynow":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -226,7 +227,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "BankTransfer":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -242,7 +243,7 @@ export default function WithdrawNowPage() {
 
         default:
           // Default case for unknown destinations
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -254,24 +255,12 @@ export default function WithdrawNowPage() {
           break;
       }
 
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Withdrawal From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Withdrawal Details:
-                ${withdrawalDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
+      await transporter.sendMail({
+        from: "pwnjabi.gg@gmail.com",
+        to: "equan@alum.up.edu.ph",
+        subject: 'New Withdrawal From a User',
+        html: `Withdrawal Details:<br/>${withdrawalDetails}`,
+      })
         .promise();
     } catch (error) {
       console.error("Error sending email:", error);
@@ -292,7 +281,7 @@ export default function WithdrawNowPage() {
 
       switch (formData.withdrawalDestination) {
         case "GCash":
-          recipientEmail = "equan@alum.up.edu.ph";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -306,7 +295,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "Cebuana":
-          recipientEmail = "equan@alum.up.edu.ph";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -321,7 +310,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "WesternUnion":
-          recipientEmail = "equan@alum.up.edu.ph";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
             <b>Email:</b> ${formData.yourEmail}
             <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -338,7 +327,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "Paynow":
-          recipientEmail = "equan@alum.up.edu.ph";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -352,7 +341,7 @@ export default function WithdrawNowPage() {
           break;
 
         case "BankTransfer":
-          recipientEmail = "equan@alum.up.edu.ph";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -368,7 +357,7 @@ export default function WithdrawNowPage() {
 
         default:
           // Default case for unknown destinations
-          recipientEmail = "equan@alum.up.edu.ph";
+          recipientEmail = `${formData.yourEmail}`;
           withdrawalDetails = `
           <b>Email:</b> ${formData.yourEmail}
           <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
@@ -380,24 +369,12 @@ export default function WithdrawNowPage() {
           break;
       }
 
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Withdrawal From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Withdrawal Details:
-                ${withdrawalDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
+      await transporter.sendMail({
+        from: "pwnjabi.gg@gmail.com",
+        to: "pwnjabi.gg@gmail.com",
+        subject: 'New Withdrawal From a User',
+        html: `Withdrawal Details:<br/>${withdrawalDetails}`,
+      })
         .promise();
     } catch (error) {
       console.error("Error sending email:", error);
@@ -415,7 +392,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.gcashReceiverName}
               required
-              onChange={(event) => handleChange(event, "gcashReceiverName")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "gcashReceiverName")}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -425,7 +402,7 @@ export default function WithdrawNowPage() {
               type="number"
               value={formData.gcashNumber}
               required
-              onChange={(event) => handleChange(event, "gcashNumber")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "gcashNumber")}
             />
           </FormControl>
         </>
@@ -440,7 +417,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.cebuanaReceiverName}
               required
-              onChange={(event) => handleChange(event, "cebuanaReceiverName")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "cebuanaReceiverName")}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -450,7 +427,7 @@ export default function WithdrawNowPage() {
               type="number"
               value={formData.cebuanaReceiverMobileNumber}
               required
-              onChange={(event) =>
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                 handleChange(event, "cebuanaReceiverMobileNumber")
               }
             />
@@ -462,7 +439,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.cebuanaReceiverAddress}
               required
-              onChange={(event) =>
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                 handleChange(event, "cebuanaReceiverAddress")
               }
             />
@@ -479,7 +456,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.westernunionReceiverName}
               required
-              onChange={(event) =>
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                 handleChange(event, "westernunionReceiverName")
               }
             />
@@ -491,7 +468,7 @@ export default function WithdrawNowPage() {
               type="number"
               value={formData.westernunionReceiverMobileNumber}
               required
-              onChange={(event) =>
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                 handleChange(event, "westernunionReceiverMobileNumber")
               }
             />
@@ -503,7 +480,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.westernunionReceiverAddress}
               required
-              onChange={(event) =>
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                 handleChange(event, "westernunionReceiverAddress")
               }
             />
@@ -520,7 +497,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.paynowReceiverName}
               required
-              onChange={(event) => handleChange(event, "paynowReceiverName")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "paynowReceiverName")}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -530,7 +507,7 @@ export default function WithdrawNowPage() {
               type="number"
               value={formData.ReceiverPaynowNumber}
               required
-              onChange={(event) => handleChange(event, "ReceiverPaynowNumber")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "ReceiverPaynowNumber")}
             />
           </FormControl>
         </>
@@ -544,7 +521,7 @@ export default function WithdrawNowPage() {
               placeholder="Select Bank Name"
               value={formData.bankName}
               required
-              onChange={(event) => handleChange(event, "bankName")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "bankName")}
             >
               <option value="BPI">BPI</option>
               <option value="PNB">PNB</option>
@@ -563,7 +540,7 @@ export default function WithdrawNowPage() {
               type="text"
               value={formData.bankReceiverName}
               required
-              onChange={(event) => handleChange(event, "bankReceiverName")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "bankReceiverName")}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -573,7 +550,7 @@ export default function WithdrawNowPage() {
               type="number"
               value={formData.ReceiverBankNumber}
               required
-              onChange={(event) => handleChange(event, "ReceiverBankNumber")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "ReceiverBankNumber")}
             />
           </FormControl>
         </>
@@ -729,7 +706,7 @@ export default function WithdrawNowPage() {
               type="text"
               value="0x2f0865cE08E27d9d8E45a14A51E47F42930C9aC9"
               required
-              onChange={(event) => handleChange(event, "receiver")}
+              onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "receiver")}
               readOnly
             />
           </FormControl>
@@ -743,7 +720,7 @@ export default function WithdrawNowPage() {
           type="number"
           value={formData.amount}
           required
-          onChange={(event) => handleChange(event, "amount")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "amount")}
         />
       </FormControl>
 
@@ -754,7 +731,7 @@ export default function WithdrawNowPage() {
           type="email"
           value={formData.yourEmail}
           required
-          onChange={(event) => handleChange(event, "yourEmail")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "yourEmail")}
         />
       </FormControl>
 
@@ -764,7 +741,7 @@ export default function WithdrawNowPage() {
           placeholder="Withdrawal Destination"
           value={formData.withdrawalDestination}
           required
-          onChange={(event) => handleChange(event, "withdrawalDestination")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "withdrawalDestination")}
         >
           <option value="GCash">GCash</option>
           <option value="Cebuana">Cebuana</option>
@@ -781,7 +758,7 @@ export default function WithdrawNowPage() {
           placeholder="Add a short message here."
           type="text"
           value={formData.message}
-          onChange={(event) => handleChange(event, "message")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "message")}
         />
       </FormControl>
 

@@ -11,7 +11,7 @@
     "deploy": "next build && next export && npx thirdweb@latest upload out"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.1",
+    "@chakra-ui/react": "^2.8.2",
     "@covalenthq/client-sdk": "^0.6.7",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -32,6 +32,7 @@
     "next": "^13",
     "next-pwa": "^5.6.0",
     "next-qrcode": "^2.5.1",
+    "nodemailer": "^6.9.11",
     "react": "^18.2",
     "react-dom": "^18.2",
     "react-icons": "^4.12.0",

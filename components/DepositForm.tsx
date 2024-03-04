@@ -21,20 +21,22 @@ import {
 import {
   useAddress,
 } from "@thirdweb-dev/react";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import styles from "../styles/CashInOutForm.module.css";
 import { IconButton } from "@chakra-ui/react";
 import { FaCheck } from "react-icons/fa";
 
-const AWS = require("aws-sdk");
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION, // change the region depending on your AWS SES config
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: process.env.SERVICE_PROVIDER, // replace with your email provider (e.g., 'gmail')
+  port:process.env.PORT,
+  auth: {
+    user: process.env.USER_EMAIL, // replace with your email
+    pass: process.env.USER_PASS, // replace with your email password
+  },
 });
-
-const ses = new AWS.SES({ apiVersion: "2010-12-01" });
 
 export default function DepositFormPage() {
   const [modalContent, setModalContent] = useState<null | JSX.Element>(null);
@@ -241,7 +243,7 @@ export default function DepositFormPage() {
 
       switch (formData.depositDestination) {
         case "GCash":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           depositDetails = `
             <b>Email:</b> ${formData.yourEmail}
             <b>Deposit Source:</b> ${formData.depositDestination}
@@ -251,7 +253,7 @@ export default function DepositFormPage() {
           break;
 
         case "Paynow":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           depositDetails = `
             <b>Email:</b> ${formData.yourEmail}
             <b>Deposit Source:</b> ${formData.depositDestination}
@@ -261,7 +263,7 @@ export default function DepositFormPage() {
           break;
 
         case "BankTransfer":
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           depositDetails = `
             <b>Email:</b> ${formData.yourEmail}
             <b>Deposit Source:</b> ${formData.depositDestination}
@@ -272,7 +274,7 @@ export default function DepositFormPage() {
 
         default:
           // Default case for unknown destinations
-          recipientEmail = "pwnjabi.gg@gmail.com";
+          recipientEmail = `${formData.yourEmail}`;
           depositDetails = `
             <b>Email:</b> ${formData.yourEmail}
             <b>Deposit Destination:</b> ${formData.depositDestination}
@@ -283,22 +285,11 @@ export default function DepositFormPage() {
           break;
       }
 
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Deposit From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Deposit Details:\n${depositDetails}`, // Include \n to separate details
-              },
-            },
-          },
+      await transporter.sendMail({
+          from: "pwnjabi.gg@gmail.com",
+          to: "pwnjabi.gg@gmail.com",
+          subject: 'New Deposit From a User',
+          html: `Deposit Details:<br/>${depositDetails}`,
         })
         .promise();
 
@@ -376,24 +367,13 @@ export default function DepositFormPage() {
           break;
       }
 
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Deposit From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Deposit Details:\n${depositDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
-        .promise();
+      await transporter.sendMail({
+        from: "pwnjabi.gg@gmail.com",
+        to: "equan@alum.up.edu.ph",
+        subject: 'New Deposit From a User',
+        html: `Deposit Details:<br/>${depositDetails}`,
+      })
+      .promise();
 
       // Optionally, show a success toast or perform other actions upon successful email sending
       toast({
@@ -443,7 +423,7 @@ export default function DepositFormPage() {
           type="number"
           value={formData.amount}
           required
-          onChange={(event) => handleChange(event, "amount")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "amount")}
         />
       </FormControl>
 
@@ -453,7 +433,7 @@ export default function DepositFormPage() {
           placeholder="Deposit Currency"
           value={formData.depositCurrency}
           required
-          onChange={(event) => handleChange(event, "depositCurrency")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "depositCurrency")}
         >
           <option value="SGD">SGD</option>
           <option value="PHP">PHP</option>
@@ -467,7 +447,7 @@ export default function DepositFormPage() {
             placeholder="Deposit Destination"
             value={formData.depositDestination}
             required
-            onChange={(event) => handleChange(event, "depositDestination")}
+            onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "depositDestination")}
           >
             <option value="GCash">GCash</option>
             <option value="BankTransfer">Bank Transfer</option>
@@ -482,7 +462,7 @@ export default function DepositFormPage() {
             placeholder="Deposit Destination"
             value={formData.depositDestination}
             required
-            onChange={(event) => handleChange(event, "depositDestination")}
+            onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "depositDestination")}
           >
             <option value="Paynow">Paynow</option>
             <option value="BankTransfer">Bank Transfer</option>
@@ -497,7 +477,7 @@ export default function DepositFormPage() {
           type="email"
           value={formData.yourEmail}
           required
-          onChange={(event) => handleChange(event, "yourEmail")}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => handleChange(event, "yourEmail")}
         />
       </FormControl>
       <Flex justifyContent="center" mt={4}>
