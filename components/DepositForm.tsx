@@ -26,15 +26,7 @@ import styles from "../styles/CashInOutForm.module.css";
 import { IconButton } from "@chakra-ui/react";
 import { FaCheck } from "react-icons/fa";
 
-const AWS = require("aws-sdk");
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION, // change the region depending on your AWS SES config
-});
-
-const ses = new AWS.SES({ apiVersion: "2010-12-01" });
+import axios from 'axios';
 
 export default function DepositFormPage() {
   const [modalContent, setModalContent] = useState<null | JSX.Element>(null);
@@ -46,12 +38,7 @@ export default function DepositFormPage() {
     depositCurrency: "",
     yourEmail: "",
     depositDestination: "",
-    gcashNumber: "",
-    paynowNumber: "",
-    bankName: "",
-    senderName: "",
-    senderBankNumber: "",
-    message: "",
+    address: address
   });
 
   const handleChange = (
@@ -77,10 +64,23 @@ export default function DepositFormPage() {
     setIsModalOpen(true);
 
     // have enough time to complete before sending the email
-    setTimeout(() => {
+    setTimeout(async () => {
+
+        const withdrawalApiEndpoint = '/api/depositEmail';
+
+        try {
+          const response = await axios.post(withdrawalApiEndpoint, formData);
+
+          if (response.data.success) {
+            console.log('Deposit email sent successfully');
+          } else {
+            console.error('Deposit email sending failed');
+          }
+        } catch (error) {
+          console.error('Error sending Deposit email:', error);
+        }
+      
       // Send email
-      sendDepositInformationEmail();
-      sendDepositInformationEmail2();
     }, 500);
   };
 
@@ -229,191 +229,6 @@ export default function DepositFormPage() {
     closeModal(); // Close the modal
   };
 
-  const sendDepositInformationEmail = async () => {
-    try {
-      if (!formData.depositDestination) {
-        console.error("Please select a deposit destination before submitting");
-        return;
-      }
-
-      let recipientEmail;
-      let depositDetails;
-
-      switch (formData.depositDestination) {
-        case "GCash":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Source:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount}
-          `;
-          break;
-
-        case "Paynow":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Source:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount}
-          `;
-          break;
-
-        case "BankTransfer":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Source:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount} 
-          `;
-          break;
-
-        default:
-          // Default case for unknown destinations
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Destination:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount}
-            <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-      }
-
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Deposit From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Deposit Details:\n${depositDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
-        .promise();
-
-      // Optionally, show a success toast or perform other actions upon successful email sending
-      toast({
-        title: "Deposit details shown",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Error sending email:", error);
-
-      // Show an error toast or handle the error in another way
-      toast({
-        title: "Error sending deposit details",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const sendDepositInformationEmail2 = async () => {
-    try {
-      if (!formData.depositDestination) {
-        console.error("Please select a deposit destination before submitting");
-        return;
-      }
-
-      let recipientEmail;
-      let depositDetails;
-
-      switch (formData.depositDestination) {
-        case "GCash":
-          recipientEmail = "equan@alum.up.edu.ph";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Source:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount}
-          `;
-          break;
-
-        case "Paynow":
-          recipientEmail = "equan@alum.up.edu.ph";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Source:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount}
-          `;
-          break;
-
-        case "BankTransfer":
-          recipientEmail = "equan@alum.up.edu.ph";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Source:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount} 
-          `;
-          break;
-
-        default:
-          // Default case for unknown destinations
-          recipientEmail = "equan@alum.up.edu.ph";
-          depositDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Deposit Destination:</b> ${formData.depositDestination}
-            <b>UID:</b> ${address}
-            <b>Amount:</b> ${formData.amount}
-            <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-      }
-
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Deposit From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Deposit Details:\n${depositDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
-        .promise();
-
-      // Optionally, show a success toast or perform other actions upon successful email sending
-      toast({
-        title: "Deposit details shown",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Error sending email:", error);
-
-      // Show an error toast or handle the error in another way
-      toast({
-        title: "Error sending deposit details",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   const isDepositButtonDisabled =
     !formData.amount ||

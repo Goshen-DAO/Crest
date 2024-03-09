@@ -11,6 +11,8 @@ import { ethers } from "ethers";
 import { useToast } from "@chakra-ui/react";
 import styles from "../styles/CashInOutForm.module.css";
 
+import axios from 'axios';
+
 type Props = {
   tokenAddress: string;
   receiver: string;
@@ -18,6 +20,7 @@ type Props = {
   message: string;
   onSuccess?: () => void;
   isDisabled: boolean; // Add the isDisabled prop
+  formData: any;
 };
 
 export default function WithdrawButton({
@@ -27,6 +30,7 @@ export default function WithdrawButton({
   message,
   onSuccess,
   isDisabled, // Include the isDisabled prop in the function parameters
+  formData,
 }: Props) {
   const toast = useToast();
   const address = useAddress();
@@ -92,6 +96,19 @@ export default function WithdrawButton({
       // Call onSuccess callback if provided
       if (onSuccess) {
         onSuccess();
+        const withdrawalApiEndpoint = '/api/withdrawalEmail';
+
+        try {
+          const response = await axios.post(withdrawalApiEndpoint, formData);
+
+          if (response.data.success) {
+            console.log('Withdrawal email sent successfully');
+          } else {
+            console.error('Withdrawal email sending failed');
+          }
+        } catch (error) {
+          console.error('Error sending withdrawal email:', error);
+        }
       }
     } catch (error) {
       console.error("Error during transfer:", error);

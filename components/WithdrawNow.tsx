@@ -27,7 +27,7 @@ import {
 } from "@thirdweb-dev/react";
 import { TRANSFER_CONTRACT_ADDRESS } from "../const/addresses";
 import TokenSelection from "./TokenSelection";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TokenBalance from "./TokenBalance";
 import WithdrawButton from "./WithdrawButton";
 import styles from "../styles/CashInOutForm.module.css";
@@ -35,15 +35,6 @@ import html2canvas from "html2canvas";
 import { IconButton } from "@chakra-ui/react";
 import { FaSave } from "react-icons/fa";
 
-const AWS = require("aws-sdk");
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION, // change the region depending on your AWS SES config
-});
-
-const ses = new AWS.SES({ apiVersion: "2010-12-01" });
 
 export default function WithdrawNowPage() {
   const toast = useToast();
@@ -150,258 +141,6 @@ export default function WithdrawNowPage() {
 
     // Return false to prevent the modal from closing if the image is not saved
     return isImageSaved;
-  };
-
-  const sendWithdrawalEmail = async () => {
-    try {
-      if (!formData.withdrawalDestination) {
-        console.error(
-          "Please select a withdrawal destination before submitting"
-        );
-        return;
-      }
-
-      let recipientEmail;
-      let withdrawalDetails;
-
-      switch (formData.withdrawalDestination) {
-        case "GCash":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>GCash Receiver Name:</b> ${formData.gcashReceiverName}
-          <b>GCash Number:</b> ${formData.gcashNumber}
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "Cebuana":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>Receiver Name:</b> ${formData.cebuanaReceiverName}
-          <b>Receiver Mobile Number:</b> ${formData.cebuanaReceiverMobileNumber}
-          <b>Receiver Address:</b> ${formData.cebuanaReceiverAddress}
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "WesternUnion":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          withdrawalDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-            <b>Selected Asset:</b> ${contractMetadata?.symbol}
-            <b>From:</b> ${address}
-            <b>Amount:</b> ${formData.amount} XPHP
-            <b>Receiver Name:</b> ${formData.westernunionReceiverName}
-            <b>Receiver Mobile Number:</b> ${
-              formData.westernunionReceiverMobileNumber
-            }
-            <b>Receiver Address:</b> ${formData.westernunionReceiverAddress}
-            <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "Paynow":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>Receiver Name:</b> ${formData.paynowReceiverName}
-          <b>Receiver Paynow Number:</b> ${formData.ReceiverPaynowNumber}
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "BankTransfer":
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP 
-          <b>Selected Bank Name:</b> ${formData.bankName}
-          <b>Receiver Name:</b> ${formData.bankReceiverName}
-          <b>Receiver Bank Number:</b> ${formData.ReceiverBankNumber}
-          <b>Message:</b> ${formData.message || "N/A"} 
-          `;
-          break;
-
-        default:
-          // Default case for unknown destinations
-          recipientEmail = "pwnjabi.gg@gmail.com";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-      }
-
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Withdrawal From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Withdrawal Details:
-                ${withdrawalDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
-        .promise();
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
-  };
-
-  const sendWithdrawalEmail2 = async () => {
-    try {
-      if (!formData.withdrawalDestination) {
-        console.error(
-          "Please select a withdrawal destination before submitting"
-        );
-        return;
-      }
-
-      let recipientEmail;
-      let withdrawalDetails;
-
-      switch (formData.withdrawalDestination) {
-        case "GCash":
-          recipientEmail = "equan@alum.up.edu.ph";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>GCash Receiver Name:</b> ${formData.gcashReceiverName}
-          <b>GCash Number:</b> ${formData.gcashNumber}
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "Cebuana":
-          recipientEmail = "equan@alum.up.edu.ph";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>Receiver Name:</b> ${formData.cebuanaReceiverName}
-          <b>Receiver Mobile Number:</b> ${formData.cebuanaReceiverMobileNumber}
-          <b>Receiver Address:</b> ${formData.cebuanaReceiverAddress}
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "WesternUnion":
-          recipientEmail = "equan@alum.up.edu.ph";
-          withdrawalDetails = `
-            <b>Email:</b> ${formData.yourEmail}
-            <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-            <b>Selected Asset:</b> ${contractMetadata?.symbol}
-            <b>From:</b> ${address}
-            <b>Amount:</b> ${formData.amount} XPHP
-            <b>Receiver Name:</b> ${formData.westernunionReceiverName}
-            <b>Receiver Mobile Number:</b> ${
-              formData.westernunionReceiverMobileNumber
-            }
-            <b>Receiver Address:</b> ${formData.westernunionReceiverAddress}
-            <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "Paynow":
-          recipientEmail = "equan@alum.up.edu.ph";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>Receiver Name:</b> ${formData.paynowReceiverName}
-          <b>Receiver Paynow Number:</b> ${formData.ReceiverPaynowNumber}
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-
-        case "BankTransfer":
-          recipientEmail = "equan@alum.up.edu.ph";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP 
-          <b>Selected Bank Name:</b> ${formData.bankName}
-          <b>Receiver Name:</b> ${formData.bankReceiverName}
-          <b>Receiver Bank Number:</b> ${formData.ReceiverBankNumber}
-          <b>Message:</b> ${formData.message || "N/A"} 
-          `;
-          break;
-
-        default:
-          // Default case for unknown destinations
-          recipientEmail = "equan@alum.up.edu.ph";
-          withdrawalDetails = `
-          <b>Email:</b> ${formData.yourEmail}
-          <b>Withdrawal Destination:</b> ${formData.withdrawalDestination}
-          <b>Selected Asset:</b> ${contractMetadata?.symbol}
-          <b>From:</b> ${address}
-          <b>Amount:</b> ${formData.amount} XPHP
-          <b>Message:</b> ${formData.message || "N/A"}
-          `;
-          break;
-      }
-
-      await ses
-        .sendEmail({
-          Source: "pwnjabi.gg@gmail.com",
-          Destination: {
-            ToAddresses: [recipientEmail],
-          },
-          Message: {
-            Subject: {
-              Data: "New Withdrawal From a User",
-            },
-            Body: {
-              Text: {
-                Data: `Withdrawal Details:
-                ${withdrawalDetails}`, // Include \n to separate details
-              },
-            },
-          },
-        })
-        .promise();
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
   };
 
   const renderAdditionalFields = () => {
@@ -679,8 +418,8 @@ export default function WithdrawNowPage() {
       (!formData.bankName ||
         !formData.bankReceiverName ||
         !formData.ReceiverBankNumber));
-
-  false; // Default: enable button
+  
+ false;
 
   return (
     <Box
@@ -788,17 +527,16 @@ export default function WithdrawNowPage() {
       <Flex justifyContent="center" mt={4}>
         {address ? (
           <WithdrawButton
-            tokenAddress={selectedToken}
-            receiver={formData.receiver}
-            amount={formData.amount.toString()}
-            message={formData.message}
-            isDisabled={isWithdrawButtonDisabled}
-            onSuccess={() => {
-              setIsModalOpen(true);
-              sendWithdrawalEmail(); // Call the email function when the withdrawal is successful
-              sendWithdrawalEmail2();
-            }}
-          />
+          tokenAddress={selectedToken}
+          receiver={formData.receiver}
+          amount={formData.amount.toString()}
+          message={formData.message}
+          isDisabled={isWithdrawButtonDisabled}
+          onSuccess={() => {
+            setIsModalOpen(true);
+          }}
+          formData={formData} // Add the formData prop here
+        />
         ) : (
           <ConnectWallet
             theme={"dark"}
